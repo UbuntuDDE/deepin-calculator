@@ -1,5 +1,5 @@
-deepin-calculator (0.1-1) unstable; urgency=medium
+deepin-calculator (5.7.0.19-1ubuntu1) impish; urgency=medium
 
-  * Initial Release.
+  * New upstream release for impish.
 
- -- Deepin Packages Builder <packages@deepin.com>  Wed, 11 Oct 2017 17:38:35 +0800
+ -- Ananta Mishra <mishraananta2017@gmail.com>  Sun, 17 Oct 2021 12:49:03 +0545

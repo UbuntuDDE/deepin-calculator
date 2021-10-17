@@ -1,13 +1,29 @@
 Source: deepin-calculator
 Section: utils
 Priority: optional
-Maintainer: Deepin Packages Builder <packages@deepin.org>
-Build-Depends: debhelper (>= 9),cmake ,pkg-config, libdtkgui-dev, libdtkwidget-dev, libqt5svg5-dev, qttools5-dev-tools, libdframeworkdbus-dev, libgtest-dev, libgmock-dev
-Standards-Version: 3.9.8
+Maintainer: Ananta Mishra <mishraananta2017@gmail.com>
+XSBC-Original-Maintainer: Deepin Packages Builder <packages@deepin.org>
+Build-Depends:
+ cmake,
+ debhelper-compat (= 13),
+ lcov,
+ libdframeworkdbus-dev,
+ libdtkgui-dev(>=5.5~),
+ libdtkwidget-dev(>=5.5~),
+ libgmock-dev,
+ libgtest-dev,
+ libqt5svg5-dev,
+ pkg-config,
+ qtbase5-dev,
+ qttools5-dev-tools,
+Rules-Requires-Root: no
+Standards-Version: 4.5.1
 Homepage: http://www.deepin.org
 
 Package: deepin-calculator
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends},
 Description: Calculator for UOS
  Calculator is a simple and easy-to-use desktop calculator. It supports addition, subtraction, multiplication and division with keyboard input perfectly matched, as well as symbolic fault-tolerant computing and calculation result linkage.
