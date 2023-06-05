@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "ut_prolistview.h"
 
 #include "../../src/views/prolistview.h"
@@ -15,11 +19,19 @@ TEST_F(Ut_ProListView, keyPressEvent)
     m_proListView->setModel(m_proListModel);
     m_proListView->setItemDelegate(m_prolistdegate);
     m_proListModel->updataList(Quantity(5));
-    m_proListView->keyPressEvent(new QKeyEvent(QEvent::KeyPress, Qt::Key_Up, Qt::NoModifier));
-    m_proListView->keyPressEvent(new QKeyEvent(QEvent::KeyPress, Qt::Key_Down, Qt::NoModifier));
-    m_proListView->keyPressEvent(new QKeyEvent(QEvent::KeyPress, Qt::Key_Space, Qt::NoModifier));
-    //无ASSERT
-    DSettingsAlt::deleteInstance();
+    QKeyEvent *k = new QKeyEvent(QEvent::KeyPress, Qt::Key_Up, Qt::NoModifier);
+    QKeyEvent *k1 = new QKeyEvent(QEvent::KeyPress, Qt::Key_Down, Qt::NoModifier);
+    QKeyEvent *k2 = new QKeyEvent(QEvent::KeyPress, Qt::Key_Space, Qt::NoModifier);
+    m_proListView->keyPressEvent(k);
+    m_proListView->keyPressEvent(k1);
+    m_proListView->keyPressEvent(k2);
+    delete k;
+    delete k1;
+    delete k2;
+    //设置焦点函数，无assert
+    delete m_proListView;
+    delete m_proListModel;
+    delete m_prolistdegate;
 }
 
 TEST_F(Ut_ProListView, focusIndex)
@@ -31,9 +43,10 @@ TEST_F(Ut_ProListView, focusIndex)
     m_proListView->setItemDelegate(m_prolistdegate);
     m_proListModel->updataList(Quantity(5));
     m_proListView->focusIndex();
-    ASSERT_EQ(m_proListView->focusIndex(), m_proListView->model()->index(m_proListView->m_focusrow, 0));
-    //无ASSERT
-    DSettingsAlt::deleteInstance();
+    EXPECT_EQ(m_proListView->focusIndex(), m_proListView->model()->index(m_proListView->m_focusrow, 0));
+    delete m_proListView;
+    delete m_proListModel;
+    delete m_prolistdegate;
 }
 
 QAction *stub_exec_pro(const QPoint &pos, QAction *at = nullptr)
@@ -50,10 +63,13 @@ TEST_F(Ut_ProListView, contextMenuEvent)
     Stub stub;
     stub.set((QAction * (QMenu::*)(const QPoint &, QAction *))ADDR(QMenu, exec), stub_exec_pro);
 //    QContextMenuEvent *e = new QContextMenuEvent(QContextMenuEvent::Reason::Mouse, m_proListView->pos());
-    m_proListView->contextMenuEvent(new QContextMenuEvent(QContextMenuEvent::Reason::Mouse,
-                                                          m_proListView->pos(), m_proListView->pos(),
-                                                          Qt::KeyboardModifier::NoModifier));
-    DSettingsAlt::deleteInstance();
+    QContextMenuEvent *e = new QContextMenuEvent(QContextMenuEvent::Reason::Mouse,
+                                                 m_proListView->pos(), m_proListView->pos(),
+                                                 Qt::KeyboardModifier::NoModifier);
+    m_proListView->contextMenuEvent(e);
+    EXPECT_EQ(e->pos(), m_proListView->pos());
+    delete e;
+    delete m_proListView;
 }
 
 TEST_F(Ut_ProListView, showTextEditMenuByAltM)
@@ -63,5 +79,6 @@ TEST_F(Ut_ProListView, showTextEditMenuByAltM)
     stub.set((QAction * (QMenu::*)(const QPoint &, QAction *))ADDR(QMenu, exec), stub_exec_pro);
 //    QContextMenuEvent *e = new QContextMenuEvent(QContextMenuEvent::Reason::Mouse, m_proListView->pos());
     m_proListView->showTextEditMenuByAltM(QModelIndex());
-    DSettingsAlt::deleteInstance();
+    EXPECT_TRUE(m_proListView->m_isMenuAltM);
+    delete m_proListView;
 }

@@ -1,33 +1,19 @@
-/*
- * Copyright (C) 2017 ~ 2018 Deepin Technology Co., Ltd.
- *
- * Author:     rekols <rekols@foxmail.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+// Copyright (C) 2017 ~ 2018 Deepin Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "basicmodule.h"
+
+#include "dthememanager.h"
+#include "../utils.h"
+#include "../../3rdparty/math/quantity.h"
 
 #include <QDebug>
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QVBoxLayout>
-
-#include "dthememanager.h"
-#include "../utils.h"
-#include "../../3rdparty/math/quantity.h"
 
 BasicModule::BasicModule(QWidget *parent)
     : DWidget(parent)
@@ -75,10 +61,6 @@ BasicModule::BasicModule(QWidget *parent)
             &BasicModule::handleKeypadButtonPress);
     connect(m_basicKeypad, &BasicKeypad::buttonPressedbySpace, this,
             &BasicModule::handleKeypadButtonPressByspace);
-    connect(m_basicKeypad, &BasicKeypad::moveLeft, [ = ] { m_expressionBar->moveLeft(); });
-    connect(m_basicKeypad, &BasicKeypad::moveRight, [ = ] { m_expressionBar->moveRight(); });
-    connect(m_memoryKeypad, &MemoryKeypad::moveLeft, [ = ] { m_expressionBar->moveLeft(); });
-    connect(m_memoryKeypad, &MemoryKeypad::moveRight, [ = ] { m_expressionBar->moveRight(); });
     connect(m_memoryKeypad, &MemoryKeypad::buttonPressed, this,
             &BasicModule::handleKeypadButtonPress);
     connect(m_memoryKeypad, &MemoryKeypad::buttonPressedbySpace, this,
@@ -690,6 +672,7 @@ void BasicModule::showListWidget()
 {
     if (m_keypadLayout->currentIndex() == 0) {
         m_keypadLayout->setCurrentIndex(1);
+        m_memorylistwidget->resetLabelBySeparator();
         MemoryButton *btn2 = static_cast<MemoryButton *>(m_memoryKeypad->button(MemoryKeypad::Key_Mplus));
         btn2->setbuttongray(true);
         btn2->setEnabled(false);
@@ -766,51 +749,6 @@ void BasicModule::closeListWidget()
 
 void BasicModule::mousePressEvent(QMouseEvent *event)
 {
-//    //内存界面显示时，点击内存界面以外部分切换内存界面为键盘界面
-//    if (m_keypadLayout->currentIndex() == 1 && m_insidewidget == false) {
-//        m_keypadLayout->setCurrentIndex(0);
-//        MemoryButton *btn2 = static_cast<MemoryButton *>(m_memoryKeypad->button(MemoryKeypad::Key_Mplus));
-//        btn2->setbuttongray(false);
-//        btn2->setEnabled(true);
-//        MemoryButton *btn3 = static_cast<MemoryButton *>(m_memoryKeypad->button(MemoryKeypad::Key_Mminus));
-//        btn3->setbuttongray(false);
-//        btn3->setEnabled(true);
-//        MemoryButton *btn4 = static_cast<MemoryButton *>(m_memoryKeypad->button(MemoryKeypad::Key_MS));
-//        btn4->setbuttongray(false);
-//        btn4->setEnabled(true);
-//        MemoryButton *btn = static_cast<MemoryButton *>(m_memoryKeypad->button(MemoryKeypad::Key_MR));
-//        btn->setbuttongray(false);
-//        btn->setEnabled(true);
-//        MemoryButton *btn1 = static_cast<MemoryButton *>(m_memoryKeypad->button(MemoryKeypad::Key_MC));
-//        btn1->setbuttongray(false);
-//        btn1->setEnabled(true);
-//        MemoryButton *btn5 = static_cast<MemoryButton *>(m_memoryKeypad->button(MemoryKeypad::Key_Mlist));
-//        btn5->setbtnlight(false);
-//        btn5->setEnabled(true);
-//        m_isallgray = false;
-//        m_expressionBar->setAttribute(Qt::WA_TransparentForMouseEvents, false);
-//        m_memoryKeypad->setAttribute(Qt::WA_TransparentForMouseEvents, false);
-//        m_expressionBar->getInputEdit()->setFocus();
-//    }
-
-//    if (m_avail == true) {
-//        MemoryButton *btn = static_cast<MemoryButton *>(m_memoryKeypad->button(MemoryKeypad::Key_MC));
-//        btn->setEnabled(true);
-//        MemoryButton *btn4 = static_cast<MemoryButton *>(m_memoryKeypad->button(MemoryKeypad::Key_MR));
-//        btn4->setEnabled(true);
-//        m_memRCbtn = true;
-//    } else {
-//        MemoryButton *btn = static_cast<MemoryButton *>(m_memoryKeypad->button(MemoryKeypad::Key_MC));
-//        btn->setEnabled(false);
-//        btn->updateWhenBtnDisable();
-//        MemoryButton *btn1 = static_cast<MemoryButton *>(m_memoryKeypad->button(MemoryKeypad::Key_MR));
-//        btn1->setEnabled(false);
-//        MemoryButton *btn5 = static_cast<MemoryButton *>(m_memoryKeypad->button(MemoryKeypad::Key_Mlist));
-//        btn5->setEnabled(false);
-//        m_memRCbtn = false;
-//    }
-//    m_insidewidget = false;
-//    m_expressionBar->getInputEdit()->isExpressionEmpty(); //确认输入栏是否有内容，发送信号M+,M-,MS是否置灰
     closeListWidget();
     QWidget::mousePressEvent(event);
 }

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 #源程序cmakelists再添加上ut相关环境搭建
 #ut相关环境搭建详情见
 #https://wikidev.uniontech.com/index.php?title=UT_%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA#.E7.94.A8.E4.BE.8B.E7.BC.96.E5.86.99_.7C_UT_Case
@@ -60,6 +64,11 @@ include_directories(${DtkWidget_INCLUDE_DIRS})
 include_directories(${DtkGui_INCLUDE_DIRS})
 include_directories(${DtkCore_INCLUDE_DIRS})
 
+pkg_check_modules(GTEST REQUIRED
+    gtest
+    gmock
+    )
+
 set (EXE_NAME deepin-calculator)
 
 set(LINK_LIBS
@@ -97,7 +106,7 @@ list(REMOVE_ITEM CAL_CPP "${CMAKE_CURRENT_LIST_DIR}/../src/main.cpp")
 file(GLOB_RECURSE CAL_TEST ${CMAKE_CURRENT_LIST_DIR}/src/*.cpp)
 file(GLOB_RECURSE CAL_TESTH ${CMAKE_CURRENT_LIST_DIR}/src/*.h)
 
-find_package(GTest REQUIRED)
+#find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
 
 set (DC_QRC_FILES
@@ -125,7 +134,12 @@ target_include_directories(${PROJECT_NAME_TEST} PUBLIC ${Qt5Widgets_LIBRARIES}
                                               ${HEAD})
 target_link_libraries (${PROJECT_NAME_TEST} ${LINK_LIBS})
 
-set(CMAKE_INSTALL_PREFIX /usr)
+#set(CMAKE_INSTALL_PREFIX /usr)
+if(DEFINED ENV{PREFIX})
+    set(CMAKE_INSTALL_PREFIX $ENV{PREFIX})
+else()
+    set(CMAKE_INSTALL_PREFIX /usr)
+endif()
 
 install(TARGETS deepin-calculator DESTINATION bin)
 file(GLOB QM_FILES "${CMAKE_CURRENT_LIST_DIR}/../translations/*.qm")
@@ -176,3 +190,14 @@ add_dependencies(test ${PROJECT_NAME_TEST})
 
 # 设置添加gocv相关信息的输出
 set(CMAKE_CXX_FLAGS "-g -fprofile-arcs -ftest-coverage")
+set(CMAKE_SAFETYTEST "${CMAKE_SAFETYTEST_ARG}")
+if(CMAKE_SAFETYTEST STREQUAL "")
+    set(CMAKE_SAFETYTEST "CMAKE_SAFETYTEST_ARG_OFF")
+endif()
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D${CMAKE_SAFETYTEST}")
+if(CMAKE_SAFETYTEST STREQUAL "CMAKE_SAFETYTEST_ARG_ON")
+  #安全测试选项
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -fsanitize=undefined,address -O2")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fsanitize=undefined,address -O2")
+endif()
+

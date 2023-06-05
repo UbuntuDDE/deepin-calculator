@@ -1,23 +1,18 @@
-/*
- * Copyright (C) 2017 ~ 2018 Deepin Technology Co., Ltd.
- *
- * Author:     rekols <rekols@foxmail.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+// Copyright (C) 2017 ~ 2018 Deepin Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "mainwindow.h"
+
+#include "dtitlebar.h"
+#include "dthememanager.h"
+#include "dhidpihelper.h"
+#include "utils.h"
+#include "../3rdparty/core/settings.h"
+
+#include <DWidgetUtil>
+#include <DPalette>
 
 #include <QPainter>
 #include <QLabel>
@@ -27,15 +22,6 @@
 #include <QDesktopWidget>
 #include <QApplication>
 #include <QPropertyAnimation>
-#include <DWidgetUtil>
-#include <DPalette>
-
-#include "dtitlebar.h"
-#include "dthememanager.h"
-#include "dhidpihelper.h"
-#include "utils.h"
-#include "../3rdparty/core/settings.h"
-
 
 DGUI_USE_NAMESPACE
 
@@ -46,7 +32,7 @@ const QSize PROGRAMM_SIZE = QSize(451, 574); //程序员模式固定大小
 MainWindow::MainWindow(QWidget *parent)
     : DMainWindow(parent)
 {
-    m_settings = DSettingsAlt::instance(this);
+    m_settings = DSettingsAlt::instance();
     m_mainLayout = new QStackedLayout();
     m_tbMenu = new DMenu(this);
     QIcon t_icon = QIcon::fromTheme("deepin-calculator");
@@ -90,6 +76,27 @@ MainWindow::~MainWindow()
 {
 }
 
+void MainWindow::switchModeBack()
+{
+    int mode = m_settings->getOption("mode").toInt();
+    switch(mode){
+    case 0:
+        switchToScientificMode();
+        switchToSimpleMode();
+        break;
+    case 1:
+        switchToSimpleMode();
+        switchToScientificMode();
+        break;
+    case 2:
+        switchToSimpleMode();
+        switchToProgrammerMode();
+        break;
+    default:
+        switchToScientificMode();
+        switchToSimpleMode();
+    }
+}
 void MainWindow::initTheme()
 {
     int type = DGuiApplicationHelper::instance()->themeType();

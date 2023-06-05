@@ -68,7 +68,7 @@
     </message>
     <message>
         <source>Calculator is an easy to use desktop calculator, supporting standard, scientific and programmer modes.</source>
-        <translation>Калкулатор је једноставан за употребу рачунарски прогам. Подржава стандардни, научни и програмерски режим.</translation>
+        <translation>Калкулатор је рачунарски прогам који је једноставан за употребу. Подржава стандардни, научни и програмерски режим.</translation>
     </message>
     <message>
         <source>Programmer</source>

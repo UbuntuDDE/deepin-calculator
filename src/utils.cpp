@@ -1,24 +1,10 @@
-/*
- * Copyright (C) 2017 ~ 2018 Deepin Technology Co., Ltd.
- *
- * Author:     rekols <rekols@foxmail.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
+// Copyright (C) 2017 ~ 2018 Deepin Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "utils.h"
+#include "dsettings.h"
 
 #include <QRegularExpression>
 #include <QStandardPaths>
@@ -69,6 +55,8 @@ QString Utils::getQssContent(const QString &filePath)
  */
 QString Utils::formatThousandsSeparators(const QString &str)
 {
+    int separate = DSettingsAlt::instance()->getSeparate(); //数字分割位数
+
     QString result = str;
     int startPos = result.indexOf(QRegularExpression("[0-9]"));
     if (startPos >= 0) {
@@ -80,7 +68,7 @@ QString Utils::formatThousandsSeparators(const QString &str)
                 endPos = result.length();
         }
 
-        for (int i = endPos - 3; i >= startPos + 1; i -= 3) {
+        for (int i = endPos - separate; i >= startPos + 1; i -= separate) {
             result.insert(i, ",");
         }
     }
@@ -146,6 +134,8 @@ QString Utils::reformatSeparators(const QString &exp)
 
 QString Utils::formatThousandsSeparatorsPro(const QString &str, const int Base)
 {
+
+
     QString result = str;
     int startPos = result.indexOf(QRegularExpression("[0-9]"));
     int startPosHex = result.indexOf(QRegularExpression("[A-F0-9]"));
@@ -162,7 +152,8 @@ QString Utils::formatThousandsSeparatorsPro(const QString &str, const int Base)
     case 10:
         if (startPos >= 0) {
             int endPos  = result.length();
-            for (int i = endPos - 3; i >= startPos + 1; i -= 3) {
+            int separate = DSettingsAlt::instance()->getSeparate(); //数字分割位数
+            for (int i = endPos - separate; i >= startPos + 1; i -= separate) {
                 result.insert(i, ",");
             }
         }

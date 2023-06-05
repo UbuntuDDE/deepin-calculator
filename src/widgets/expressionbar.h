@@ -1,37 +1,23 @@
-/*
- * Copyright (C) 2017 ~ 2018 Deepin Technology Co., Ltd.
- *
- * Author:     rekols <rekols@foxmail.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+// Copyright (C) 2017 ~ 2018 Deepin Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #ifndef EXPRESSIONBAR_H
 #define EXPRESSIONBAR_H
-
-#include <QKeyEvent>
-#include <QPair>
-#include <QVBoxLayout>
-#include <QVector>
-#include <QWidget>
-#include <DWidget>
 
 #include "../../3rdparty/core/evaluator.h"
 #include "inputedit.h"
 #include "../views/simplelistdelegate.h"
 #include "../views/simplelistmodel.h"
 #include "../views/simplelistview.h"
+
+#include <DWidget>
+#include <QKeyEvent>
+#include <QPair>
+#include <QVBoxLayout>
+#include <QVector>
+#include <QWidget>
 
 DWIDGET_USE_NAMESPACE
 
@@ -114,6 +100,7 @@ public slots:
 private slots:
     void handleTextChanged(const QString &text);
     void revisionResults(const QModelIndex &index);
+    void onSeparateChange();//数字间隔位数发生改变
 
 private:
     bool cursorPosAtEnd();
@@ -134,7 +121,6 @@ private:
     SimpleListModel *m_listModel;
     InputEdit *m_inputEdit;
 
-    QString m_unfinishedExp;  //未完成表达式
     bool m_isContinue;        //点击结果左侧可继续输入，在结果最右侧清除结果
     bool m_isAllClear;         //C,AC切换标志
     bool m_isResult;           //计算结果
@@ -146,7 +132,6 @@ private:
     bool m_isLinked;     //联动状态
     int m_linkageIndex;  //联动索引缓存
     int m_Selected;      //历史记录选中项
-    QString m_selection;
     QVector<historicalLinkageIndex> m_hisLink;  //历史联动索引
     QVector<QString> m_undo;
     QVector<QString> m_redo;

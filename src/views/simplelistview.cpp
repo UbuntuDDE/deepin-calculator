@@ -1,21 +1,7 @@
-/*
- * Copyright (C) 2017 ~ 2018 Deepin Technology Co., Ltd.
- *
- * Author:     rekols <rekols@foxmail.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+// Copyright (C) 2017 ~ 2018 Deepin Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "simplelistview.h"
 
@@ -128,7 +114,8 @@ void SimpleListView::mouseMoveEvent(QMouseEvent *e)
                 m_presschanged = false;
             QListView::mouseMoveEvent(e);
         } else {
-            static_cast<SimpleListDelegate *>(itemDelegate(indexAt(e->pos())))->paintback(indexAt(e->pos()), 0);
+            if (indexAt(e->pos()).isValid())
+                static_cast<SimpleListDelegate *>(itemDelegate(indexAt(e->pos())))->paintback(indexAt(e->pos()), 0);
             QWidget::mouseMoveEvent(e);
         }
     } else if (m_mode == 0 && this->count() > 0) {
@@ -139,7 +126,8 @@ void SimpleListView::mouseMoveEvent(QMouseEvent *e)
                 m_presschanged = false;
             QListView::mouseMoveEvent(e);
         } else {
-            static_cast<SimpleListDelegate *>(itemDelegate(indexAt(e->pos())))->paintback(indexAt(e->pos()), 0);
+            if (indexAt(e->pos()).isValid())
+                static_cast<SimpleListDelegate *>(itemDelegate(indexAt(e->pos())))->paintback(indexAt(e->pos()), 0);
             QWidget::mouseMoveEvent(e);
         }
 //        if (e->x() < width() - 12) {

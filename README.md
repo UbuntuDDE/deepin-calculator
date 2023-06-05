@@ -4,15 +4,23 @@ Deepin calculator is an easy to use calculator for ordinary users.
 
 ## Dependencies
 
-* sudo apt install libdtkwidget-dev libqt5svg5-dev qttools5-dev-tools
+* sudo apt install libdtkwidget-dev libqt5svg5-dev qttools5-dev-tools cmake
 
 ## Installation
 
 * mkdir build
 * cd build
-* qmake ..
+* cmake .. -DBUILD_TESTING=OFF
 * make
 
+## Test
+
+* sudo apt install libgtest-dev googletest libgmock-dev
+* mkdir build
+* camke ..
+* cd tests
+* make
+* ./deepin-calculator-test
 ## Usage
 
 * ./deepin-calculator
@@ -35,5 +43,4 @@ We encourage you to report issues and contribute changes
 
 ## License
 
-Deepin Calculator is licensed under [GPLv3](LICENSE) or any later version.
-
+Deepin Calculator is licensed under [GPL-3.0-or-later](LICENSE)

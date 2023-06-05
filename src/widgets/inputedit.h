@@ -1,30 +1,16 @@
-/*
- * Copyright (C) 2017 ~ 2018 Deepin Technology Co., Ltd.
- *
- * Author:     rekols <rekols@foxmail.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+// Copyright (C) 2017 ~ 2018 Deepin Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #ifndef INPUTEDIT_H
 #define INPUTEDIT_H
 
-#include <DLineEdit>
-#include <DPalette>
-
 #include "../../3rdparty/math/quantity.h"
 #include "../../3rdparty/core/evaluator.h"
+
+#include <DLineEdit>
+#include <DPalette>
 
 DGUI_USE_NAMESPACE
 DWIDGET_USE_NAMESPACE
@@ -74,6 +60,8 @@ public slots:
     void handleTextChanged(const QString &text);
     void radixChanged(int baseori, int basedest);
     QString scanAndExec(int baseori, int basedest);
+    void onSwietThreeSeparateClicked();
+    void onswietFourSeparateClicked();
 
 Q_SIGNALS:
     void keyPress(QKeyEvent *);
@@ -89,6 +77,9 @@ Q_SIGNALS:
     void emptyExpression(bool b);
     void cursorPositionNumberChanged(QString num);
     void prolistAns(QPair<bool, Quantity> pair);
+    void swietThreeSeparate();  //切换为千分位
+    void swietFourSeparate();  //切换为万分位
+    void separateChange();
 
 protected:
     void keyPressEvent(QKeyEvent *);
@@ -127,10 +118,11 @@ private:
     QAction *m_paste;
     QAction *m_delete;
     QAction *m_select;
+    QAction *m_threeSeparate;  //以三位分开
+    QAction *m_fourSeparate;  //以四位分开
 
     Quantity m_memoryans; //用于内存的结果
     Evaluator *m_evaluator;
-    QString m_percentexp;
     bool m_ispercentanswer = false; //百分号结果是否需要转换为quantity
     //支持的功能列表
     QList<QString> m_funclist; //科学模式下函数名列表

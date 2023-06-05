@@ -1,32 +1,16 @@
-/*
-* Copyright (C) 2019 ~ 2020 Uniontech Software Technology Co.,Ltd.
-*
-* Author:     xiajing <xiajing@uniontech.com>
-*
-* Maintainer: jingzhou <jingzhou@uniontech.com>
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+// Copyright (C) 2019 ~ 2020 Uniontech Software Technology Co.,Ltd.
+// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "memhiswidget.h"
-
-#include <QVBoxLayout>
-#include <QHBoxLayout>
 
 #include "dthememanager.h"
 #include "../utils.h"
 #include "../../3rdparty/math/quantity.h"
+
+#include <QVBoxLayout>
+#include <QHBoxLayout>
 
 MemHisWidget::MemHisWidget(QWidget *parent)
     : DWidget(parent)
@@ -119,6 +103,7 @@ MemHisWidget::MemHisWidget(QWidget *parent)
         if (!m_buttonBox->button(1)->hasFocus() && QApplication::focusWidget() != nullptr)
             this->setFocus();
         m_clearButton->showtooltip(false); //设置内存垃圾桶tooltip
+        m_listModel->updataOfSeparate();
         m_stackWidget->setCurrentWidget(m_listView);
         m_clearButton->setHidden(!m_isshowH);
 
@@ -288,18 +273,13 @@ bool MemHisWidget::eventFilter(QObject *obj, QEvent *event)
             QKeyEvent *key_event = static_cast < QKeyEvent *>(event); //将事件转化为键盘事件
             if (key_event->key() == Qt::Key_Tab) {
                 if (m_memoryWidget->findChild<MemoryListWidget *>()->hasFocus()) {
-//                    focusNextChild();//焦点移动
                     m_memoryBtn->setFocus(Qt::TabFocusReason);
                 } else if (m_listView->hasFocus()) {
-//                    focusNextChild();//焦点移动
                     m_memoryBtn->setFocus(Qt::TabFocusReason);
                 } else if ((m_memoryBtn->hasFocus() || m_historyBtn->hasFocus()) && !m_clearButton->isHidden()) {
-//                    focusNextChild();//焦点移动
                     m_clearButton->setFocus(Qt::TabFocusReason);
                 } else if (m_clearButton->hasFocus()) {
-//                    focusNextChild();//焦点移动
                     if (m_stackWidget->currentWidget() == m_memoryWidget)
-//                        m_memoryWidget->findChild<MemoryListWidget *>()->setFocus();
                         m_memoryWidget->setFocus(Qt::TabFocusReason);
                     else
                         m_listView->setFocus(Qt::TabFocusReason);
@@ -388,4 +368,15 @@ void MemHisWidget::historyfilled()
     emit hisIsFilled(true);
     if (m_stackWidget->currentWidget() != m_memoryWidget)
         m_clearButton->setHidden(false);
+}
+
+MemoryWidget *MemHisWidget::getMemoryWiget()
+{
+    return m_memoryWidget;
+}
+
+
+SimpleListModel* MemHisWidget::getSimpleListModel()
+{
+    return m_listModel;
 }

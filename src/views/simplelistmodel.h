@@ -1,28 +1,14 @@
-/*
- * Copyright (C) 2017 ~ 2018 Deepin Technology Co., Ltd.
- *
- * Author:     rekols <rekols@foxmail.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+// Copyright (C) 2017 ~ 2018 Deepin Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #ifndef SIMPLELISTMODEL_H
 #define SIMPLELISTMODEL_H
 
-#include <QAbstractListModel>
-
 #include "../../3rdparty/core/evaluator.h"
+
+#include <QAbstractListModel>
 
 class SimpleListModel : public QAbstractListModel
 {
@@ -30,7 +16,7 @@ class SimpleListModel : public QAbstractListModel
 
 public:
     SimpleListModel(int mode = 0, QObject *parent = nullptr);//mode:0-标准模式 1-科学模式
-    ~SimpleListModel();
+    ~SimpleListModel() override;
     void refrushModel();
 
     //model的data数据类型
@@ -42,8 +28,8 @@ public:
         ExpressionNext, //下一个数据
     };
 
-    int rowCount(const QModelIndex &parent) const;
-    QVariant data(const QModelIndex &index, int role) const;
+    int rowCount(const QModelIndex &parent) const override;
+    QVariant data(const QModelIndex &index, int role) const override;
     void appendText(const QString &text, bool sci);
     void clearItems();
     void updataList(const QString &text, const int index, bool sci = false);
@@ -57,6 +43,8 @@ public:
     QString formatExpression(const int &probase, const QString &text);
     void answerOutOfRange(Quantity ans);
     void expOutofRange();
+    //更改数据分割位数
+    void updataOfSeparate();
 
 signals:
     void hisbtnhidden();

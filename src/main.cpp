@@ -1,21 +1,11 @@
-/*
- * Copyright (C) 2017 ~ 2017 Deepin Technology Co., Ltd.
- *
- * Author:     rekols <rekols@foxmail.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+// Copyright (C) 2017 ~ 2017 Deepin Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+#include "mainwindow.h"
+#include "environments.h"
+#include "utils.h"
 
 #include <QDBusInterface>
 #include <QDate>
@@ -29,10 +19,6 @@
 #include <DLog>
 #include <DWidgetUtil>
 #include <DWindowManagerHelper>
-
-#include "mainwindow.h"
-#include "environments.h"
-#include "utils.h"
 
 DWIDGET_USE_NAMESPACE
 static QString g_appPath;  //全局路径
@@ -88,6 +74,9 @@ DGuiApplicationHelper::ColorType getThemeTypeSetting()
 
 int main(int argc, char *argv[])
 {
+    if (!QString(qgetenv("XDG_CURRENT_DESKTOP")).toLower().startsWith("deepin")) {
+        setenv("XDG_CURRENT_DESKTOP", "Deepin", 1);
+    }
     // DApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
     DApplication app(argc, argv);
@@ -111,8 +100,6 @@ int main(int argc, char *argv[])
     app.setApplicationDisplayName(QObject::tr("Calculator"));
     // app.setStyle("chameleon");
 
-    QDBusConnection dbus = QDBusConnection::sessionBus();
-    dbus.registerService("com.deepin.calculator");
     using namespace Dtk::Core;
     Dtk::Core::DLogManager::registerConsoleAppender();
     Dtk::Core::DLogManager::registerFileAppender();
@@ -125,8 +112,9 @@ int main(int argc, char *argv[])
 
     MainWindow window;
     window.setWindowFlag(Qt::WindowMaximizeButtonHint, false);
-    DSettingsAlt *m_dsettings = DSettingsAlt::instance(&window);
-    if (app.setSingleInstance(app.applicationName(), DApplication::UserScope)) {
+    DSettingsAlt *m_dsettings = DSettingsAlt::instance();
+    QDBusConnection dbus = QDBusConnection::sessionBus();
+    if (dbus.registerService("com.deepin.calculator")) {
         Dtk::Widget::moveToCenter(&window);
         m_dsettings->setOption("windowX", window.pos().x());
         m_dsettings->setOption("windowY", window.pos().y());
@@ -140,24 +128,12 @@ int main(int argc, char *argv[])
         DGuiApplicationHelper::instance()->setThemeType(oldpalette);
     }
 
-
-    // 应用已保存的主题设置
-//    DGuiApplicationHelper::ColorType t_type = DGuiApplicationHelper::instance()->themeType();
-//    saveThemeTypeSetting(t_type);
-    //监听当前应用主题切换事件
-//    QObject::connect(DGuiApplicationHelper::instance(),
-//                     &DGuiApplicationHelper::paletteTypeChanged,
-//    [](DGuiApplicationHelper::ColorType type) {
-//        qDebug() << type;
-//        // 保存程序的主题设置  type : 0,系统主题， 1,浅色主题， 2,深色主题
-//        saveThemeTypeSetting(type);
-//        DGuiApplicationHelper::instance()->setPaletteType(type);
-//    });
-
     // 20200330 主题记忆更改为规范代码
 //    DApplicationSettings savetheme(&app);
     // Register debus service.
     dbus.registerObject("/com/deepin/calculator", &window, QDBusConnection::ExportScriptableSlots);
     window.show();
+    window.switchModeBack();
+
     return app.exec();
 }

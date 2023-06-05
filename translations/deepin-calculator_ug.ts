@@ -3,7 +3,7 @@
     <name>ExpressionBar</name>
     <message>
         <source>Expression error</source>
-        <translation>ئىپادە خاتا</translation>
+        <translation>ئىپادىلەش خاتا</translation>
     </message>
 </context>
 <context>
@@ -26,6 +26,14 @@
     <message>
         <source>Select All</source>
         <translation>ھەممىنى تاللاش</translation>
+    </message>
+    <message>
+        <source>Use thousands separator</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Use ten-thousands separator</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <source>Undo</source>
@@ -144,7 +152,7 @@
     <name>ProExpressionBar</name>
     <message>
         <source>Expression error</source>
-        <translation>ئىپادە خاتا</translation>
+        <translation>ئىپادىلەش خاتا</translation>
     </message>
 </context>
 <context>

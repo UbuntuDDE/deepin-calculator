@@ -1,21 +1,7 @@
-/*
- * Copyright (C) 2017 ~ 2018 Deepin Technology Co., Ltd.
- *
- * Author:     rekols <rekols@foxmail.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+// Copyright (C) 2017 ~ 2018 Deepin Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "iconbutton.h"
 
@@ -90,24 +76,16 @@ void IconButton::animate(bool isspace, int msec)
         m_isPress = true;
         m_currentUrl = m_pressUrl;
         m_buttonStatus = 2;
-        if (m_mode == 1)
-            m_mode = 2;
-        if (m_mode == 3)
-            m_mode = 4;
-        if (m_mode == 5)
-            m_mode = 6;
+        if ((m_mode & 1) == 1)
+            ++m_mode;
 
         QTimer::singleShot(msec, this, [ = ] {
             if (!isspace)
                 setDown(false);
             m_currentUrl = m_normalUrl;
             m_buttonStatus = 0;
-            if (m_mode == 2)
-                m_mode = 1;
-            if (m_mode == 4)
-                m_mode = 3;
-            if (m_mode == 6)
-                m_mode = 5;
+            if ((m_mode & 1) != 1)
+                --m_mode;
             m_isPress = false;
             update();
         });
@@ -149,25 +127,20 @@ void IconButton::setBtnPressing(bool press)
 {
     if (press) {
         m_currentUrl = m_pressUrl;
-        if (m_mode == 5)
-            m_mode = 6;
-        if (m_mode == 3)
-            m_mode = 4;
+        if ((m_mode & 1) == 1)
+            ++m_mode;
         m_isPress = true;
         m_buttonStatus = 2;
         m_isHover = false; //20200722删除foucus状态
         m_isPressing = true;
     } else {
         m_currentUrl = m_normalUrl;
-        if (m_mode == 6)
-            m_mode = 5;
-        if (m_mode == 4)
-            m_mode = 3;
+        if ((m_mode & 1) != 1)
+            --m_mode;
         m_isPress = false;
         m_buttonStatus = 0;
         m_isPressing = false;
     }
-    emit updateInterface();
 }
 
 /**
@@ -178,7 +151,6 @@ void IconButton::setBtnPressing(bool press)
 void IconButton::setBtnHighlight(bool light)
 {
     m_highlight = light;
-    emit updateInterface();
 }
 
 /**
@@ -188,12 +160,8 @@ void IconButton::mousePressEvent(QMouseEvent *e)
 {
     m_currentUrl = m_pressUrl;
     m_buttonStatus = 2;
-    if (m_mode == 1)
-        m_mode = 2;
-    if (m_mode == 3)
-        m_mode = 4;
-    if (m_mode == 5)
-        m_mode = 6;
+    if ((m_mode & 1) == 1)
+        ++m_mode;
     m_isPress = true;
     m_isHover = false; //20200722删除foucus状态
     //pixmap.setDevicePixelRatio(devicePixelRatioF());
@@ -210,12 +178,8 @@ void IconButton::mouseReleaseEvent(QMouseEvent *e)
 //    if (m_isHistorybtn)
 //        clearFocus();
     m_currentUrl = m_normalUrl;
-    if (m_mode == 2)
-        m_mode = 1;
-    if (m_mode == 4)
-        m_mode = 3;
-    if (m_mode == 6)
-        m_mode = 5;
+    if ((m_mode & 1) != 1)
+        --m_mode;
     if (m_isPress == true && this->rect().contains(e->pos())) {
         m_currentUrl = m_hoverUrl;
         m_buttonStatus = 1;
@@ -422,7 +386,7 @@ void IconButton::keyPressEvent(QKeyEvent *e)
  */
 void IconButton::SetAttrRecur(QDomElement elem, QString strtagname, QString strattr, QString strattrval)
 {
-    if ((m_mode != 1 && m_mode != 3 && m_mode != 5) || m_highlight) {
+    if ((m_mode != 1 && m_mode != 3 && m_mode != 5 && m_mode != 7) || m_highlight) {
         if (elem.tagName().compare(strtagname) == 0 && elem.attribute(strattr) != "none" && elem.attribute(strattr) != "") {
             elem.setAttribute(strattr, strattrval);
             if (m_buttonStatus == 0)
@@ -451,6 +415,16 @@ void IconButton::SetAttrRecur(QDomElement elem, QString strtagname, QString stra
         }
         if (m_mode == 6) {
             if (elem.tagName().compare(strtagname) == 0 && elem.attribute(strattr) != "none" && elem.attribute(strattr) != "") {
+                elem.setAttribute(strattr, strattrval);
+            }
+        }
+        if (m_mode == 8) {
+            strattr = "fill";
+            if (elem.attribute(strattr) != "none" && elem.attribute(strattr) != "") {
+                elem.setAttribute(strattr, strattrval);
+            }
+            strattr = "stroke";
+            if (elem.attribute(strattr) != "none" && elem.attribute(strattr) != "") {
                 elem.setAttribute(strattr, strattrval);
             }
         }

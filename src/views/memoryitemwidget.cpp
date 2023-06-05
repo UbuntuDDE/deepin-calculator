@@ -1,23 +1,7 @@
-/*
-* Copyright (C) 2019 ~ 2020 Uniontech Software Technology Co.,Ltd.
-*
-* Author:     jingzhou <jingzhou@uniontech.com>
-*
-* Maintainer: xiajing <xiajing@uniontech.com>
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+// Copyright (C) 2019 ~ 2020 Uniontech Software Technology Co.,Ltd.
+// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "memoryitemwidget.h"
 
@@ -160,18 +144,10 @@ void MemoryItemWidget::contextMenuEvent(QContextMenuEvent *event)
         plus->setEnabled(true);
         minus->setEnabled(true);
     }
-    connect(copy, &QAction::triggered, this, [ = ]() {
-        emit menucopy();
-    });
-    connect(clean, &QAction::triggered, this, [ = ]() {
-        emit menuclean();
-    });
-    connect(plus, &QAction::triggered, this, [ = ]() {
-        emit menuplus();
-    });
-    connect(minus, &QAction::triggered, this, [ = ]() {
-        emit menuminus();
-    });
+    connect(copy, &QAction::triggered, this, &MemoryItemWidget::menucopy);
+    connect(clean, &QAction::triggered, this, &MemoryItemWidget::menuclean);
+    connect(plus, &QAction::triggered, this, &MemoryItemWidget::menuplus);
+    connect(minus, &QAction::triggered, this, &MemoryItemWidget::menuminus);
     menu->exec(event->globalPos()); //当前鼠标位置显示菜单
     delete menu;
 }
@@ -227,9 +203,15 @@ void MemoryItemWidget::paintEvent(QPaintEvent *e)
     }
 }
 
-void MemoryItemWidget::setLineHight(int line)
+void MemoryItemWidget::setLineHight(int line, int height)
 {
-    m_label->setFixedHeight(45 * line);
+    m_label->setFixedHeight(height * line);
+    m_line = line;
+}
+
+int MemoryItemWidget::getLine()
+{
+    return m_line;
 }
 
 void MemoryItemWidget::showTextEditMenuByAltM()
@@ -250,18 +232,10 @@ void MemoryItemWidget::showTextEditMenuByAltM()
         plus->setEnabled(true);
         minus->setEnabled(true);
     }
-    connect(copy, &QAction::triggered, this, [ = ]() {
-        emit menucopy();
-    });
-    connect(clean, &QAction::triggered, this, [ = ]() {
-        emit menuclean();
-    });
-    connect(plus, &QAction::triggered, this, [ = ]() {
-        emit menuplus();
-    });
-    connect(minus, &QAction::triggered, this, [ = ]() {
-        emit menuminus();
-    });
+    connect(copy, &QAction::triggered, this, &MemoryItemWidget::menucopy);
+    connect(clean, &QAction::triggered, this, &MemoryItemWidget::menuclean);
+    connect(plus, &QAction::triggered, this, &MemoryItemWidget::menuplus);
+    connect(minus, &QAction::triggered, this, &MemoryItemWidget::menuminus);
     QPoint menupoint;
     menupoint.setX(mapToGlobal(m_label->rect().center()).x());
     menupoint.setY(mapToGlobal(m_label->rect().bottomLeft()).y());

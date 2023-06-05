@@ -1,21 +1,7 @@
-/*
-* Copyright (C) 2020 ~ 2021 Uniontech Software Technology Co.,Ltd.
-*
-* Author:     jingzhou <jingzhou@uniontech.com>
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+// Copyright (C) 2020 ~ 2021 Uniontech Software Technology Co.,Ltd.
+// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "programmerkeypad.h"
 
@@ -172,15 +158,14 @@ void ProgrammerKeypad::initButtons()
         const QPair<DPushButton *, const KeyDescription *> hashValue(button, desc);
         m_keys.insert(desc->button, hashValue); //key为枚举值，value.first为DPushButton *, value.second为const KeyDescription *
 
-        connect(static_cast<TextButton *>(button), &TextButton::focus, this, &ProgrammerKeypad::getFocus); //获取上下左右键
-        connect(static_cast<TextButton *>(button), &TextButton::updateInterface, [ = ] {update();}); //点击及焦点移除时update
-        connect(static_cast<TextButton *>(button), &TextButton::space, this, [ = ]() {
-            Buttons spacekey = m_keys.key(hashValue);
-            emit buttonPressedbySpace(spacekey);
-        });
+        if (desc->text != "=") {
+            connect(static_cast<TextButton *>(button), &TextButton::focus, this, &ProgrammerKeypad::getFocus); //获取上下左右键
+            connect(static_cast<TextButton *>(button), &TextButton::space, this, [ = ]() {
+                Buttons spacekey = m_keys.key(hashValue);
+                emit buttonPressedbySpace(spacekey);
+            });
+        }
         connect(button, &DPushButton::clicked, m_mapper, static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
-        connect(static_cast<TextButton *>(button), &TextButton::moveLeft, this, &ProgrammerKeypad::moveLeft);
-        connect(static_cast<TextButton *>(button), &TextButton::moveRight, this, &ProgrammerKeypad::moveRight);
         m_mapper->setMapping(button, desc->button); //多个按钮绑定到一个mapper上
     }
     static_cast<TextButton *>(this->button(Key_point))->setButtonGray(true);
