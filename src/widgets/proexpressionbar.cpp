@@ -1,30 +1,16 @@
-/*
-* Copyright (C) 2020 ~ 2021 Uniontech Software Technology Co.,Ltd.
-*
-* Author:     jingzhou <jingzhou@uniontech.com>
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+// Copyright (C) 2020 ~ 2021 Uniontech Software Technology Co.,Ltd.
+// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "proexpressionbar.h"
+
+#include "../utils.h"
+#include "../../3rdparty/core/settings.h"
 
 #include <QVBoxLayout>
 #include <QDebug>
 #include <DGuiApplicationHelper>
-
-#include "../utils.h"
-#include "../../3rdparty/core/settings.h"
 
 const int LIST_HEIGHT = 35; //输入栏上方表达式的高度
 const int INPUTEDIT_HEIGHT = 55;
@@ -243,6 +229,9 @@ void ProExpressionBar::enterSymbolEvent(const QString &text)
     }
     m_isContinue = true;
     expressionCheck();
+    if (!m_inputEdit->text().isEmpty()) {
+        emit clearStateChanged(false);
+    }
     addUndo();
 }
 
@@ -260,7 +249,7 @@ void ProExpressionBar::enterBackspaceEvent()
         int funpos = -1;
         int i;
         int Sepold = text.count(",") + text.count(" ");
-        if (text.size() > 0 && cur > 0 && (text[cur - 1] == "," || (text[cur - 1] == " " && !text[cur - 2].isLower()))) {
+        if (text.size() > 0 && cur > 1 && (text[cur - 1] == "," || (text[cur - 1] == " " && !text[cur - 2].isLower()))) {
             text.remove(cur - 2, 2);
             m_inputEdit->setText(text);
             // 20200401 symbolFaultTolerance
@@ -344,6 +333,7 @@ void ProExpressionBar::enterBackspaceEvent()
 void ProExpressionBar::enterClearEvent()
 {
     Settings::instance()->proRotateCarry = "00";
+    bool need_addundo = !m_inputEdit->text().isEmpty();
     if (m_isAllClear) {
         m_listModel->clearItems();
         m_listView->reset();
@@ -361,7 +351,8 @@ void ProExpressionBar::enterClearEvent()
     m_isResult = false;
     m_isUndo = false;
 //    m_Selected = -1;
-    addUndo();
+    if (need_addundo)
+        addUndo();
 }
 
 void ProExpressionBar::enterEqualEvent()
@@ -457,6 +448,7 @@ void ProExpressionBar::enterNotEvent()
 {
     if (!judgeinput())
         return;
+    emit clearStateChanged(false);
     if (m_inputEdit->text().isEmpty()) {
         m_inputEdit->setText("not(0)");
         m_isResult = false;
@@ -575,6 +567,7 @@ void ProExpressionBar::enterOperatorEvent(const QString &text)
 {
     if (!judgeinput())
         return;
+    emit clearStateChanged(false);
     QString zerotext = "0" + text;
     bool isreplace = false;
     int length = text.length();
@@ -657,6 +650,7 @@ void ProExpressionBar::enterOppositeEvent()
     if (m_inputEdit->text().isEmpty()) {
         return;
     }
+    emit clearStateChanged(false);
     m_isResult = false;
     m_isUndo = false;
     bool hasselect = (m_inputEdit->getSelection().selected != "");
@@ -796,6 +790,7 @@ void ProExpressionBar::enterLeftBracketsEvent()
         return;
     if (m_inputEdit->text().count("(") >= 100)
         return;
+    emit clearStateChanged(false);
     m_isResult = false;
     replaceSelection(m_inputEdit->text());
     QString exp = m_inputEdit->text();
@@ -825,6 +820,7 @@ void ProExpressionBar::enterRightBracketsEvent()
         return;
     if (m_inputEdit->text().count(")") >= 100)
         return;
+    emit clearStateChanged(false);
     m_isResult = false;
     replaceSelection(m_inputEdit->text());
     QString exp = m_inputEdit->text();
@@ -928,6 +924,7 @@ void ProExpressionBar::addUndo()
 {
     m_undo.append(m_inputEdit->text());
     m_redo.clear();
+    m_inputEdit->setRedoAction(false);
     m_inputEdit->setUndoAction(true);
     SSelection selection;
     m_inputEdit->setSelection(selection);
@@ -950,6 +947,7 @@ void ProExpressionBar::copyClipboard2Result()
     int curpos = m_inputEdit->cursorPosition(); //未粘贴操作的光标位
     QString text = Utils::toHalfWidth(QApplication::clipboard()->text());
     text = text.left(text.indexOf("="));
+    text = text.toUpper();
     text = text.replace('+', QString::fromUtf8("＋"))
            .replace('-', QString::fromUtf8("－"))
            .replace("_", QString::fromUtf8("－"))
@@ -1116,8 +1114,7 @@ void ProExpressionBar::Redo()
     m_inputEdit->setText(m_redo.last());
     m_undo.append(m_inputEdit->text());
     m_redo.removeLast();
-    if (m_redo.isEmpty())
-        m_inputEdit->setRedoAction(false);
+    m_inputEdit->setRedoAction(!m_redo.isEmpty());
     if (m_inputEdit->text().isEmpty() && m_listModel->rowCount(QModelIndex()) != 0) {
         emit clearStateChanged(true);
         m_isAllClear = true;
@@ -1149,6 +1146,7 @@ void ProExpressionBar::initConnect()
     connect(m_inputEdit, &InputEdit::undo, this, &ProExpressionBar::Undo);
     connect(m_inputEdit, &InputEdit::redo, this, &ProExpressionBar::Redo);
     connect(m_inputEdit, &InputEdit::setResult, this, &ProExpressionBar::setResultFalse);
+    connect(m_inputEdit, &InputEdit::separateChange, this, &ProExpressionBar::onSeparateChange);
 }
 
 void ProExpressionBar::replaceSelection(QString text)
@@ -1512,4 +1510,13 @@ void ProExpressionBar::handleTextChanged()
 {
     m_isAllClear = false;
     m_isContinue = true;
+}
+
+/**
+ * @brief ProExpressionBar::separateChange
+ * 数字间隔位数发生改变
+ */
+void ProExpressionBar::onSeparateChange()
+{
+   m_listModel->updataOfSeparate();
 }

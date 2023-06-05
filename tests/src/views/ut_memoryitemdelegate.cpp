@@ -1,5 +1,8 @@
+// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "ut_memoryitemdelegate.h"
-#include "../../src/views/memoryitemdelegate.h"
 
 #include "../../src/views/memorylistwidget.h"
 #include <QPainter>
@@ -7,6 +10,16 @@
 Ut_MemoryItemDelegate::Ut_MemoryItemDelegate()
 {
 
+}
+
+void Ut_MemoryItemDelegate::SetUp()
+{
+    m_memoryItemDelegate = new MemoryItemDelegate;
+}
+
+void Ut_MemoryItemDelegate::TearDown()
+{
+    delete m_memoryItemDelegate;
 }
 
 //bool stub_focus_memdelegateT()
@@ -21,7 +34,6 @@ bool stub_focus_memdelegateF()
 
 TEST_F(Ut_MemoryItemDelegate, paint)
 {
-    MemoryItemDelegate *m_memoryItemDelegate = new MemoryItemDelegate;
     MemoryListWidget *listwidget = new MemoryListWidget;
     listwidget->setItemDelegate(m_memoryItemDelegate);
 
@@ -45,18 +57,18 @@ TEST_F(Ut_MemoryItemDelegate, paint)
     m_memoryItemDelegate->paint(painter, option, index);
     DGuiApplicationHelper::instance()->setThemeType(DGuiApplicationHelper::ColorType::LightType);
     m_memoryItemDelegate->paint(painter, option, index);
-//    listwidget->update();
-//    qDebug() << listwidget->palette().color(QPalette::ColorGroup::Current, QPalette::ColorRole::Window).name();
-//    QPalette pal = m_memorywidget->palette();
-//    QBrush brush = pal.background();
-//    m_memorywidget->update();
-//    m_memoryItemDelegate->paint()
-//    qDebug() << m_memorywidget->palette().color(QPalette::ColorGroup::Active, QPalette::ColorRole::Base);
-//    ASSERT_EQ(brush.color().name(), "#252525");
+    delete painter;
+    //paint函数，无assert
+    listwidget->deleteLater();
+    delete item;
+    widget->deleteLater();
 }
 
 TEST_F(Ut_MemoryItemDelegate, updateEditorGeometry)
 {
-    MemoryItemDelegate *m_memoryItemDelegate = new MemoryItemDelegate;
-    m_memoryItemDelegate->updateEditorGeometry(new QWidget(), QStyleOptionViewItem(), QModelIndex());
+    QWidget *widget = new QWidget();
+    QStyleOptionViewItem item;
+    m_memoryItemDelegate->updateEditorGeometry(widget, item, QModelIndex());
+    EXPECT_EQ(widget->geometry(), item.rect);
+    widget->deleteLater();
 }

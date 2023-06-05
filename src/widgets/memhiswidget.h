@@ -1,33 +1,10 @@
-/*
-* Copyright (C) 2019 ~ 2020 Uniontech Software Technology Co.,Ltd.
-*
-* Author:     xiajing <xiajing@uniontech.com>
-*
-* Maintainer: jingzhou <jingzhou@uniontech.com>
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+// Copyright (C) 2019 ~ 2020 Uniontech Software Technology Co.,Ltd.
+// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #ifndef MEMHISWIDGET_H
 #define MEMHISWIDGET_H
-
-#include <QStackedWidget>
-#include <QApplication>
-#include <DButtonBox>
-#include <DIconButton>
-#include <DWidget>
-#include <DGuiApplicationHelper>
 
 #include "../control/iconbutton.h"
 #include "../views/memorywidget.h"
@@ -35,6 +12,14 @@
 #include "../views/simplelistmodel.h"
 #include "../views/simplelistview.h"
 #include "../memorypublic.h"
+
+#include <DButtonBox>
+#include <DIconButton>
+#include <DWidget>
+#include <DGuiApplicationHelper>
+
+#include <QStackedWidget>
+#include <QApplication>
 
 DGUI_USE_NAMESPACE
 DWIDGET_USE_NAMESPACE
@@ -59,6 +44,8 @@ public:
     void memoryFunctions(memOperate operate = generateData, Quantity answer = Quantity(), int row = -1);
     void resetFocus();
     void historyfilled();
+    MemoryWidget *getMemoryWiget();
+    SimpleListModel* getSimpleListModel();
 
     void mouseMoveEvent(QMouseEvent *e);
     void keyPressEvent(QKeyEvent *e);

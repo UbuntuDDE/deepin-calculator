@@ -1,29 +1,16 @@
-/*
-* Copyright (C) 2020 ~ 2021 Uniontech Software Technology Co.,Ltd.
-*
-* Author:     jingzhou <jingzhou@uniontech.com>
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+// Copyright (C) 2020 ~ 2021 Uniontech Software Technology Co.,Ltd.
+// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "programmodule.h"
-#include <DIconButton>
-#include <DLabel>
-#include <DPushButton>
 
 #include "probitwidget.h"
 #include "../../3rdparty/core/settings.h"
+
+#include <DIconButton>
+#include <DLabel>
+#include <DPushButton>
 
 const int EXPRESSIONBAR_HEIGHT = 95;
 
@@ -425,7 +412,7 @@ void ProgramModule::handleKeypadButtonPressByspace(int key)
         path = QString(":/assets/images/%1/").arg("light");
     m_checkBtnKeypad->update();
     m_programmerKeypad->update();
-    if (key > 35 && key < 42)
+    if (key > 39 && key < 42)
         m_checkBtnKeypad->animate(ProCheckBtnKeypad::Buttons(key), true);
     else if (key <= 35)
         m_programmerKeypad->animate(ProgrammerKeypad::Buttons(key), true);

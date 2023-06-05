@@ -1,23 +1,7 @@
-/*
-* Copyright (C) 2019 ~ 2020 Uniontech Software Technology Co.,Ltd.
-*
-* Author:     xiajing <xiajing@uniontech.com>
-*
-* Maintainer: jingzhou <jingzhou@uniontech.com>
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+// Copyright (C) 2019 ~ 2020 Uniontech Software Technology Co.,Ltd.
+// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "memorykeypad.h"
 
@@ -113,14 +97,11 @@ void MemoryKeypad::initButtons()
         m_keys.insert(desc->button, hashValue); //key为枚举值，value.first为DPushButton *, value.second为const KeyDescription *
 
         connect(static_cast<MemoryButton *>(button), &MemoryButton::focus, this, &MemoryKeypad::getFocus); //获取上下左右键
-        connect(static_cast<MemoryButton *>(button), &MemoryButton::updateInterface, [ = ] {update();}); //点击及焦点移除时update
         connect(button, &DPushButton::clicked, m_mapper, static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
         connect(static_cast<MemoryButton *>(button), &MemoryButton::space, this, [ = ]() {
             Buttons spacekey = m_keys.key(hashValue);
             emit buttonPressedbySpace(spacekey);
         });
-        connect(static_cast<MemoryButton *>(button), &MemoryButton::moveLeft, this, &MemoryKeypad::moveLeft);
-        connect(static_cast<MemoryButton *>(button), &MemoryButton::moveRight, this, &MemoryKeypad::moveRight);
         m_mapper->setMapping(button, desc->button); //多个按钮绑定到一个mapper上
     }
 }

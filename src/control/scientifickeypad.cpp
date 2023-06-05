@@ -1,23 +1,7 @@
-/*
-* Copyright (C) 2019 ~ 2020 Uniontech Software Technology Co.,Ltd.
-*
-* Author:     xiajing <xiajing@uniontech.com>
-*
-* Maintainer: jingzhou <jingzhou@uniontech.com>
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+// Copyright (C) 2019 ~ 2020 Uniontech Software Technology Co.,Ltd.
+// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "scientifickeypad.h"
 
@@ -301,15 +285,14 @@ void ScientificKeyPad::initButtons()
         const QPair<DPushButton *, const KeyDescription *> hashValue(button, desc);
         m_keys.insert(desc->button, hashValue); //key为枚举值，value.first为DPushButton *, value.second为const KeyDescription *
 
-        connect(static_cast<TextButton *>(button), &TextButton::focus, this, &ScientificKeyPad::getFocus); //获取上下左右键
-        connect(static_cast<TextButton *>(button), &TextButton::updateInterface, [ = ] {update();}); //点击及焦点移除时update
-        connect(static_cast<TextButton *>(button), &TextButton::space, this, [ = ]() {
-            Buttons spacekey = m_keys.key(hashValue);
-            emit buttonPressedbySpace(spacekey);
-        });
+        if (desc->text != "=") {
+            connect(static_cast<TextButton *>(button), &TextButton::focus, this, &ScientificKeyPad::getFocus); //获取上下左右键
+            connect(static_cast<TextButton *>(button), &TextButton::space, this, [ = ]() {
+                Buttons spacekey = m_keys.key(hashValue);
+                emit buttonPressedbySpace(spacekey);
+            });
+        }
         connect(button, &DPushButton::clicked, m_mapper, static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
-        connect(static_cast<TextButton *>(button), &TextButton::moveLeft, this, &ScientificKeyPad::moveLeft);
-        connect(static_cast<TextButton *>(button), &TextButton::moveRight, this, &ScientificKeyPad::moveRight);
         m_mapper->setMapping(button, desc->button); //多个按钮绑定到一个mapper上
 
     }
@@ -383,10 +366,7 @@ void ScientificKeyPad::initStackWidget(QStackedWidget *widget, DPushButton *butt
                              Qt::AlignCenter/* | Qt::AlignTop*/);
     const QPair<DPushButton *, const KeyDescription1 *> hashValue1(pagebutton, desc1);
     m_keys1.insert(desc1->button, hashValue1); //key为枚举值，value.first为DPushButton *, value.second为const KeyDescription1 *
-    connect(static_cast<TextButton *>(pagebutton), &TextButton::updateInterface, [ = ] {update();});
     connect(pagebutton, &DPushButton::clicked, m_mapper, static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
-    connect(static_cast<TextButton *>(pagebutton), &TextButton::moveLeft, this, &ScientificKeyPad::moveLeft);
-    connect(static_cast<TextButton *>(pagebutton), &TextButton::moveRight, this, &ScientificKeyPad::moveRight);
     connect(static_cast<TextButton *>(pagebutton), &TextButton::space, this, [ = ]() {
         Buttons spacekey = m_keys1.key(hashValue1);
         emit buttonPressedbySpace(spacekey);
@@ -432,7 +412,7 @@ void ScientificKeyPad::buttonThemeChanged(int type)
         btn->setIconUrl(path + "rad_normal.svg", path + "rad_hover.svg", path + "rad_press.svg", 5);
     } else if (m_deg == 2) {
         btn = static_cast<IconButton *>(button(Key_deg));
-        btn->setIconUrl(path + "grad_normal.svg", path + "grad_hover.svg", path + "grad_press.svg", 5);
+        btn->setIconUrl(path + "grad_normal.svg", path + "grad_hover.svg", path + "grad_press.svg", 7);
     } else if (m_deg == 3) {
         btn = static_cast<IconButton *>(button(Key_deg));
         btn->setIconUrl(path + "deg_normal.svg", path + "deg_hover.svg", path + "deg_press.svg", 5);
@@ -495,7 +475,7 @@ void ScientificKeyPad::getdeg(int deg)
     } else if (m_deg == 2) {
         btn = static_cast<IconButton *>(button(Key_deg));
         QTimer::singleShot(100, this, [ = ] {
-            btn->setIconUrl(path + "grad_normal.svg", path + "grad_hover.svg", path + "grad_press.svg", 5);
+            btn->setIconUrl(path + "grad_normal.svg", path + "grad_hover.svg", path + "grad_press.svg", 7);
             btn->update();
         });
     } else if (m_deg == 3) {

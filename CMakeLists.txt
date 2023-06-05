@@ -35,6 +35,17 @@ if (NOT (${CMAKE_BUILD_TYPE} MATCHES "Debug"))
                     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/)
 endif ()
 
+set(CMAKE_SAFETYTEST "${CMAKE_SAFETYTEST_ARG}")
+if(CMAKE_SAFETYTEST STREQUAL "")
+    set(CMAKE_SAFETYTEST "CMAKE_SAFETYTEST_ARG_OFF")
+endif()
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D${CMAKE_SAFETYTEST}")
+if(CMAKE_SAFETYTEST STREQUAL "CMAKE_SAFETYTEST_ARG_ON")
+  #安全测试选项
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -fsanitize=undefined,address -O2")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fsanitize=undefined,address -O2")
+endif()
+
 configure_file(src/environments.h.in environments.h @ONLY)
 
 # Find the library
@@ -47,9 +58,9 @@ find_package(Qt5Xml REQUIRED)
 find_package(Qt5Svg REQUIRED)
 find_package(Qt5Test REQUIRED)
 
-find_package(DtkWidget REQUIRED dtkwidget)
-find_package(DtkGui REQUIRED dtkgui)
-find_package(DtkCore REQUIRED dtkcore)
+pkg_search_module(DtkWidget REQUIRED dtkwidget)
+pkg_search_module(DtkGui REQUIRED dtkgui)
+pkg_search_module(DtkCore REQUIRED dtkcore)
 #find_package(DFrameworkDbus REQUIRED dframeworkdbus)
 pkg_check_modules(DFrameworkDBus REQUIRED dframeworkdbus)
 
@@ -105,7 +116,12 @@ target_include_directories(${EXE_NAME} PUBLIC ${Qt5Widgets_LIBRARIES}
 
 target_link_libraries (${EXE_NAME} ${LINK_LIBS})
 
-set(CMAKE_INSTALL_PREFIX /usr)
+#set(CMAKE_INSTALL_PREFIX /usr)
+if(DEFINED ENV{PREFIX})
+    set(CMAKE_INSTALL_PREFIX $ENV{PREFIX})
+else()
+    set(CMAKE_INSTALL_PREFIX /usr)
+endif()
 
 install(TARGETS deepin-calculator DESTINATION bin)
 file(GLOB QM_FILES "${CMAKE_CURRENT_LIST_DIR}/translations/*.qm")
@@ -115,6 +131,17 @@ install(FILES ${CMAKE_CURRENT_LIST_DIR}/deepin-calculator.desktop
 install(FILES ${CMAKE_CURRENT_LIST_DIR}/src/assets/images/deepin-calculator.svg
             DESTINATION share/icons/hicolor/scalable/apps/)
 install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/src/assets/deepin-calculator
-                DESTINATION /usr/share/deepin-manual/manual-assets/application/)
+                DESTINATION share/deepin-manual/manual-assets/application/)
 
+#if (NOT ${CMAKE_SYSTEM_PROCESSOR} MATCHES "loongarch64")
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 add_subdirectory(tests)  #tests为ut测试文件夹名
+endif ()
+#endif ()
+
+
+#代码覆盖率开关
+if(CMAKE_COVERAGE_ARG STREQUAL "CMAKE_COVERAGE_ARG_ON")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -Wall -fprofile-arcs -ftest-coverage")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -fprofile-arcs -ftest-coverage")
+endif()

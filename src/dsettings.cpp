@@ -1,21 +1,7 @@
-/*
- * Copyright (C) 2017 ~ 2018 Deepin Technology Co., Ltd.
- *
- * Author:     rekols <rekols@foxmail.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+// Copyright (C) 2017 ~ 2018 Deepin Technology Co., Ltd.
+// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "dsettings.h"
 
@@ -32,10 +18,11 @@ static DSettingsAlt *INSTANCE = nullptr;
 /**
  * @brief 初始化
  */
-DSettingsAlt *DSettingsAlt::instance(QObject *p)
+DSettingsAlt *DSettingsAlt::instance()
 {
     if (!INSTANCE) {
-        INSTANCE = new DSettingsAlt(p);
+        INSTANCE = new DSettingsAlt();
+        qAddPostRoutine(deleteInstance);
     }
 
     return INSTANCE;
@@ -48,12 +35,28 @@ DSettingsAlt::DSettingsAlt(QObject *parent)
     : QObject(parent),
       m_settings(new QSettings(QDir(Utils::getConfigDir()).filePath("config.config"), QSettings::IniFormat, this))
 {
-    initConfig();;
+    initConfig();
+    loadConfig();
 }
 
 DSettingsAlt::~DSettingsAlt()
 {
 //    delete m_settings;
+    //saveConfig();
+}
+
+void DSettingsAlt::loadConfig()
+{
+    m_standardSeparate = m_settings->value("standardSeparate", 3).toInt();  //默认3位
+    m_scientificSeparate = m_settings->value("scientificSeparate", 3).toInt();
+    m_programmerSeparate = m_settings->value("programmerSeparate", 3).toInt();
+}
+
+void DSettingsAlt::saveConfig()
+{
+    m_settings->setValue("standardSeparate", m_standardSeparate);
+    m_settings->setValue("scientificSeparate", m_scientificSeparate);
+    m_settings->setValue("programmerSeparate", m_programmerSeparate);
 }
 
 void DSettingsAlt::initConfig()
@@ -105,4 +108,102 @@ void DSettingsAlt::deleteInstance()
 {
     delete INSTANCE;
     INSTANCE = nullptr;
+}
+
+/**
+ * @brief DSettingsAlt::getSeparate
+ * @return 根据配置文件中的计算器类型返回相应的计算器分隔位数
+ */
+int DSettingsAlt::getSeparate()
+{
+    int separate = 3;   //数字分割位数
+    switch (m_settings->value("mode", 0).toInt()) {
+    case 0: separate = getStandardSeparate();
+        break;
+    case 1: separate = getScientificSeparate();
+        break;
+    case 2: separate = getProgrammerSeparate();
+        break;
+    }
+
+    //间隔位数小于1时转为3，防止发生一些意外情况
+    if (separate < 1) {
+        separate = 3;
+    }
+    return separate;
+}
+
+/**
+ * @brief DSettingsAlt::setSeparate
+ * 根据配置文件中的计算器类型设置相应的计算器分隔位数
+ * @param separate  间隔位数
+ */
+void DSettingsAlt::setSeparate(int separate)
+{
+    switch (m_settings->value("mode", 0).toInt()) {
+    case 0: setStandardSeparate(separate);
+        break;
+    case 1: setScientificSeparate(separate);
+        break;
+    case 2: setProgrammerSeparate(separate);
+        break;
+    }
+
+    saveConfig();
+}
+
+/**
+ * @brief getStandardSeparate
+ * 获取标准计算器分隔位数
+ * @return 标准计算器分隔位数
+ */
+int DSettingsAlt::getStandardSeparate()
+{
+    return m_standardSeparate;
+}
+
+/**
+ * @brief setStandardSeparate
+ * 设置标准计算器分隔位数
+ */
+void DSettingsAlt::setStandardSeparate(int separate)
+{
+    this->m_standardSeparate = separate;
+}
+
+/**
+ * @brief getScientificSeparate
+ * 获取科学计算器分隔位数
+ * @return
+ */
+int DSettingsAlt::getScientificSeparate()
+{
+    return m_scientificSeparate;
+}
+
+/**
+ * @brief setScientificSeparate
+ * 设置科学计算器分隔位数
+ */
+void DSettingsAlt::setScientificSeparate(int separate)
+{
+    this->m_scientificSeparate = separate;
+}
+
+/**
+ * @brief getProgrammerSeparate
+ * @return 程序员计算器分隔位数
+ */
+int DSettingsAlt::getProgrammerSeparate()
+{
+    return m_programmerSeparate;
+}
+
+/**
+ * @brief setProgrammerSeparate
+ * 设置程序员计算器分隔位数
+ */
+void DSettingsAlt::setProgrammerSeparate(int separate)
+{
+    this->m_programmerSeparate = separate;
 }

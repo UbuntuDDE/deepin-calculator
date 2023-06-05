@@ -1,23 +1,7 @@
-/*
-* Copyright (C) 2019 ~ 2020 Uniontech Software Technology Co.,Ltd.
-*
-* Author:     jingzhou <jingzhou@uniontech.com>
-*
-* Maintainer: xiajing <xiajing@uniontech.com>
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+// Copyright (C) 2019 ~ 2020 Uniontech Software Technology Co.,Ltd.
+// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #ifndef MEMORYWIDGET_H
 #define MEMORYWIDGET_H
@@ -61,6 +45,13 @@ public:
     MemoryListWidget *getMemoryWidget();
     QString programmerResult(const Quantity answer);
     void resetAllLabelByBase();
+    void resetLabelBySeparator();
+
+public slots:
+    void setThemeType(int type);
+    void expressionempty(bool b);
+    void widgetcleanslot(int row, int mode, bool ismenu);
+    void setMemoryPublic(MemoryPublic *pub);
 
 signals:
     void widgetplus(int row);
@@ -70,6 +61,17 @@ signals:
     void themechange(int type);
     void widgetclean(int row, int mode, bool ismenu); //是否通过menu点击发出，用于区分是否下一个item直接进入hover状态
     void hideWidget();
+
+private:
+    void initConnect();
+    QString formatExpression(const QString &text);
+    QString setitemwordwrap(const QString &text, int row = 0);
+    void emptymemoryfontcolor();
+    QString programmerWrap(QString result);
+    int fontHeight();
+
+private slots:
+    void resetItemHeight();
 
 private:
     MemoryListWidget *m_listwidget;
@@ -87,17 +89,6 @@ private:
     QLabel *m_label;//内存为空item
     int m_currentrow = 0;//listwidget当前行
     MemoryPublic *m_memorypublic = nullptr;
-
-private:
-    void initConnect();
-    QString formatExpression(const QString &text);
-    QString setitemwordwrap(const QString &text, int row = 0);
-    void emptymemoryfontcolor();
-public slots:
-    void setThemeType(int type);
-    void expressionempty(bool b);
-    void widgetcleanslot(int row, int mode, bool ismenu);
-    void setMemoryPublic(MemoryPublic *pub);
 };
 
 

@@ -1,35 +1,23 @@
-/*
-* Copyright (C) 2020 ~ 2021 Uniontech Software Technology Co.,Ltd.
-*
-* Author:     jingzhou <jingzhou@uniontech.com>
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+// Copyright (C) 2020 ~ 2021 Uniontech Software Technology Co.,Ltd.
+// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #ifndef PROGRAMMERITEMWIDGET_H
 #define PROGRAMMERITEMWIDGET_H
 
 #include <QDebug>
 #include <QWidget>
-#include <DIconButton>
 #include <QLabel>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QMouseEvent>
 #include <QPainter>
-#include <DGuiApplicationHelper>
 #include <QSvgRenderer>
+
+#include <DGuiApplicationHelper>
+#include <DIconButton>
+
 
 DWIDGET_USE_NAMESPACE
 
@@ -39,13 +27,13 @@ class ProgrammerItemWidget : public QWidget
 public:
     ProgrammerItemWidget(QString label, const int width, const QString path, QWidget *parent = nullptr);
     ProgrammerItemWidget(QString label, QWidget *parent = nullptr);
-    ~ProgrammerItemWidget();
-    void enterEvent(QEvent *event);
-    void leaveEvent(QEvent *event);
-    void mousePressEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
-    void paintEvent(QPaintEvent *e);
-    bool eventFilter(QObject *obj, QEvent *event);
+    ~ProgrammerItemWidget() override;
+    void enterEvent(QEvent *event) override;
+    void leaveEvent(QEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void paintEvent(QPaintEvent *e) override;
+    bool eventFilter(QObject *obj, QEvent *event) override;
     void cleanHoverState();
     void cleanFocusState();
     void isMarkHide(bool ishide);

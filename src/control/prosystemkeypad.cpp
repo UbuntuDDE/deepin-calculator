@@ -1,21 +1,7 @@
-/*
-* Copyright (C) 2020 ~ 2021 Uniontech Software Technology Co.,Ltd.
-*
-* Author:     jingzhou <jingzhou@uniontech.com>
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+// Copyright (C) 2020 ~ 2021 Uniontech Software Technology Co.,Ltd.
+// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "prosystemkeypad.h"
 
@@ -188,6 +174,7 @@ void ProSystemKeypad::setvalue(QString num)
     int length = num.length();
     if (length > Settings::instance()->proBitLength) {
         num = num.right(Settings::instance()->proBitLength);
+        length = num.length();
         m_binaryValue.fill('0', 64).replace(64 - length, length, num);
         emit valuechanged(m_binaryValue);
         longBitCut(num);
@@ -236,7 +223,6 @@ void ProSystemKeypad::initconnects()
         connect(m_buttons.value(i), &BitButton::focus, this, [ = ](int direction) {
             getFocus(direction, i);
         }); //获取上下左右键
-        connect(m_buttons.value(i), &BitButton::updateInterface, [ = ] {update();}); //点击及焦点移除时update
         connect(m_buttons.value(i), &BitButton::space, this, [ = ]() {
             if (m_buttons.value(i)->text() == QString("0"))
                 m_buttons.value(i)->setButtonState(true);

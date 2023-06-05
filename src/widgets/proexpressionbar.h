@@ -1,33 +1,19 @@
-/*
-* Copyright (C) 2020 ~ 2021 Uniontech Software Technology Co.,Ltd.
-*
-* Author:     jingzhou <jingzhou@uniontech.com>
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+// Copyright (C) 2020 ~ 2021 Uniontech Software Technology Co.,Ltd.
+// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #ifndef PROEXPRESSIONBAR_H
 #define PROEXPRESSIONBAR_H
-
-#include <QApplication>
-#include <QClipboard>
-#include <QKeyEvent>
 
 #include "inputedit.h"
 #include "../views/simplelistview.h"
 #include "../views/simplelistmodel.h"
 #include "../views/simplelistdelegate.h"
+
+#include <QApplication>
+#include <QClipboard>
+#include <QKeyEvent>
 
 DWIDGET_USE_NAMESPACE
 
@@ -88,6 +74,7 @@ private:
     bool isNumberOutOfRange(const QString &text);
     void selectedPartDelete(const QRegExp &rx);
     bool curposInNumber(int curpos);
+    void onSeparateChange();//数字将位数发生改变
 
 private slots:
     void handleTextChanged();

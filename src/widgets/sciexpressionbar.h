@@ -1,41 +1,24 @@
-/*
-* Copyright (C) 2019 ~ 2020 Uniontech Software Technology Co.,Ltd.
-*
-* Author:     xiajing <xiajing@uniontech.com>
-*
-* Maintainer: jingzhou <jingzhou@uniontech.com>
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+// Copyright (C) 2019 ~ 2020 Uniontech Software Technology Co.,Ltd.
+// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #ifndef SCIEXPRESSIONBAR_H
 #define SCIEXPRESSIONBAR_H
-
-#include <QKeyEvent>
-#include <QPair>
-#include <QVBoxLayout>
-#include <QVector>
-#include <QWidget>
-#include <QToolTip>
-
-#include <DWidget>
 
 #include "../../3rdparty/core/evaluator.h"
 #include "inputedit.h"
 #include "../views/simplelistdelegate.h"
 #include "../views/simplelistmodel.h"
 #include "../views/simplelistview.h"
+
+#include <DWidget>
+#include <QKeyEvent>
+#include <QPair>
+#include <QVBoxLayout>
+#include <QVector>
+#include <QWidget>
+#include <QToolTip>
 
 DWIDGET_USE_NAMESPACE
 
@@ -102,7 +85,14 @@ public slots:
 
 private slots:
     void handleTextChanged(const QString &text);
-
+    /**
+     * @brief pointCheckAfterDelete
+     * 删除内容后5秒钟清理多余的小数点
+     * @param curpos
+     * 光标位置
+     */
+    void pointCheckAfterDelete();
+    void onSeparateChange();//数字将位数发生改变
 
 private:
     bool cursorPosAtEnd();
@@ -122,14 +112,11 @@ private:
     SimpleListModel *m_listModel;
     InputEdit *m_inputEdit;
 
-    QString m_unfinishedExp;  //未完成表达式
     bool m_isContinue;
     bool m_isAllClear;
     bool m_isResult;           //计算结果
-    bool m_isAutoComputation;  //自动计算
     bool m_inputNumber;        //输入数字
     bool m_isUndo;
-    QString m_selection;
     QVector<QString> m_undo;
     QVector<QString> m_redo;
 

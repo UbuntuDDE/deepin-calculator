@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "ut_bitbutton.h"
 #include "../../src/control/bitbutton.h"
 
@@ -10,7 +14,10 @@ TEST_F(Ut_BitButton, init)
 {
     BitButton *m_bitbutton = new BitButton;
     m_bitbutton->init();
-    ASSERT_EQ(m_bitbutton->m_font.pixelSize(), 18);
+    EXPECT_EQ(m_bitbutton->m_font.pixelSize(), 18);
+    EXPECT_EQ(m_bitbutton->m_font.family(), "Noto Sans");
+    EXPECT_EQ(m_bitbutton->m_font.weight(), 2);
+    delete m_bitbutton;
 }
 
 TEST_F(Ut_BitButton, animate)
@@ -19,67 +26,103 @@ TEST_F(Ut_BitButton, animate)
     m_bitbutton->m_isHover = true;
     m_bitbutton->m_isPress = false;
     m_bitbutton->animate(false, 100);
-    ASSERT_FALSE(m_bitbutton->m_isHover);
+    EXPECT_FALSE(m_bitbutton->m_isHover);
+    EXPECT_TRUE(m_bitbutton->m_isPress);
+    delete m_bitbutton;
 }
 
 TEST_F(Ut_BitButton, setButtonState)
 {
     BitButton *m_bitbutton = new BitButton;
     m_bitbutton->setButtonState(false);
+    EXPECT_FALSE(m_bitbutton->m_btnState);
     m_bitbutton->setButtonState(true);
-    ASSERT_EQ(m_bitbutton->text(), "1");
+    EXPECT_EQ(m_bitbutton->text(), "1");
+    delete m_bitbutton;
 }
 
 TEST_F(Ut_BitButton, mousePressEvent)
 {
     BitButton *m_bitbutton = new BitButton;
-    m_bitbutton->mousePressEvent(new QMouseEvent(QMouseEvent::Type::MouseButtonPress,
-                                                 m_bitbutton->pos(), Qt::MouseButton::LeftButton,
-                                                 Qt::MouseButton::NoButton, Qt::KeyboardModifier::NoModifier));
-    ASSERT_TRUE(m_bitbutton->m_isPress);
+    QMouseEvent *m = new QMouseEvent(QMouseEvent::Type::MouseButtonPress,
+                                     m_bitbutton->pos(), Qt::MouseButton::LeftButton,
+                                     Qt::MouseButton::NoButton, Qt::KeyboardModifier::NoModifier);
+    m_bitbutton->mousePressEvent(m);
+    delete m;
+    EXPECT_TRUE(m_bitbutton->m_isPress);
+    EXPECT_FALSE(m_bitbutton->m_isHover);
+    delete m_bitbutton;
 }
 
 TEST_F(Ut_BitButton, mouseReleaseEvent)
 {
     BitButton *m_bitbutton = new BitButton;
-    m_bitbutton->mouseReleaseEvent(new QMouseEvent(QMouseEvent::Type::MouseButtonRelease,
-                                                   m_bitbutton->pos(), Qt::MouseButton::LeftButton,
-                                                   Qt::MouseButton::NoButton, Qt::KeyboardModifier::NoModifier));
-    ASSERT_FALSE(m_bitbutton->m_isPress);
+    m_bitbutton->setText("1");
+    QMouseEvent *m = new QMouseEvent(QMouseEvent::Type::MouseButtonRelease,
+                                     m_bitbutton->pos(), Qt::MouseButton::LeftButton,
+                                     Qt::MouseButton::NoButton, Qt::KeyboardModifier::NoModifier);
+    m_bitbutton->mouseReleaseEvent(m);
+    EXPECT_FALSE(m_bitbutton->m_isPress);
+    EXPECT_FALSE(m_bitbutton->m_btnState);
+    delete m;
+    delete m_bitbutton;
 }
 
 TEST_F(Ut_BitButton, enterEvent)
 {
     BitButton *m_bitbutton = new BitButton;
-    m_bitbutton->enterEvent(new QEvent(QEvent::Type::Enter));
-    ASSERT_TRUE(m_bitbutton->m_isHover);
+    QEvent *q = new QEvent(QEvent::Type::Enter);
+
+    m_bitbutton->enterEvent(q);
+    delete q;
+    EXPECT_TRUE(m_bitbutton->m_isHover);
+    delete m_bitbutton;
 }
 
 TEST_F(Ut_BitButton, leaveEvent)
 {
     BitButton *m_bitbutton = new BitButton;
-    m_bitbutton->leaveEvent(new QEvent(QEvent::Type::Leave));
-    ASSERT_FALSE(m_bitbutton->m_isHover);
+    QEvent *q = new QEvent(QEvent::Type::Leave);
+
+    m_bitbutton->leaveEvent(q);
+    delete q;
+    EXPECT_FALSE(m_bitbutton->m_isHover);
+    delete m_bitbutton;
 }
 
 TEST_F(Ut_BitButton, keyPressEvent)
 {
     BitButton *m_bitbutton = new BitButton;
-    m_bitbutton->keyPressEvent(new QKeyEvent(QEvent::KeyPress, Qt::Key_Up, Qt::NoModifier));
-    m_bitbutton->keyPressEvent(new QKeyEvent(QEvent::KeyPress, Qt::Key_Down, Qt::NoModifier));
-    m_bitbutton->keyPressEvent(new QKeyEvent(QEvent::KeyPress, Qt::Key_Left, Qt::NoModifier));
-    m_bitbutton->keyPressEvent(new QKeyEvent(QEvent::KeyPress, Qt::Key_Right, Qt::NoModifier));
-    m_bitbutton->keyPressEvent(new QKeyEvent(QEvent::KeyPress, Qt::Key_Space, Qt::NoModifier));
-    m_bitbutton->keyPressEvent(new QKeyEvent(QEvent::KeyPress, Qt::Key_Enter, Qt::NoModifier));
-    m_bitbutton->keyPressEvent(new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier));
-    m_bitbutton->keyPressEvent(new QKeyEvent(QEvent::KeyPress, Qt::Key_1, Qt::NoModifier));
-    //无ASSERT
+    QKeyEvent *k = new QKeyEvent(QEvent::KeyPress, Qt::Key_Up, Qt::NoModifier);
+    QKeyEvent *k1 = new QKeyEvent(QEvent::KeyPress, Qt::Key_Down, Qt::NoModifier);
+    QKeyEvent *k2 = new QKeyEvent(QEvent::KeyPress, Qt::Key_Left, Qt::NoModifier);
+    QKeyEvent *k3 = new QKeyEvent(QEvent::KeyPress, Qt::Key_Right, Qt::NoModifier);
+    QKeyEvent *k4 = new QKeyEvent(QEvent::KeyPress, Qt::Key_Space, Qt::NoModifier);
+    QKeyEvent *k5 = new QKeyEvent(QEvent::KeyPress, Qt::Key_Enter, Qt::NoModifier);
+    m_bitbutton->keyPressEvent(k);
+    m_bitbutton->keyPressEvent(k1);
+    m_bitbutton->keyPressEvent(k2);
+    m_bitbutton->keyPressEvent(k3);
+    m_bitbutton->keyPressEvent(k4);
+    m_bitbutton->keyPressEvent(k5);
+    delete k;
+    delete k1;
+    delete k2;
+    delete k3;
+    delete k4;
+    delete k5;
+    //该函数只修改焦点，无assert
+    delete m_bitbutton;
 }
 
 TEST_F(Ut_BitButton, focusOutEvent)
 {
     BitButton *m_bitbutton = new BitButton;
-    m_bitbutton->focusOutEvent(new QFocusEvent(QEvent::Type::FocusOut));
+    QFocusEvent *f = new QFocusEvent(QEvent::Type::FocusOut);
+    m_bitbutton->focusOutEvent(f);
+    delete f;
+    delete m_bitbutton;
+    //焦点丢失函数，无assert
 }
 
 TEST_F(Ut_BitButton, paintEvent)
@@ -94,5 +137,7 @@ TEST_F(Ut_BitButton, paintEvent)
     m_bitbutton->update();
     DGuiApplicationHelper::instance()->setThemeType(DGuiApplicationHelper::ColorType::DarkType);
     m_bitbutton->paintEvent(event);
-    //无ASSERT
+    delete event;
+    //paintevent,无ASSERT
+    delete m_bitbutton;
 }

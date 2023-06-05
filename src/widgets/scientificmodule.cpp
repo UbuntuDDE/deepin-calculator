@@ -1,25 +1,13 @@
-/*
-* Copyright (C) 2019 ~ 2020 Uniontech Software Technology Co.,Ltd.
-*
-* Author:     xiajing <xiajing@uniontech.com>
-*
-* Maintainer: jingzhou <jingzhou@uniontech.com>
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+// Copyright (C) 2019 ~ 2020 Uniontech Software Technology Co.,Ltd.
+// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #include "scientificmodule.h"
+
+#include "dthememanager.h"
+#include "../utils.h"
+#include "../../3rdparty/math/quantity.h"
 
 #include <QDebug>
 #include <QKeyEvent>
@@ -27,10 +15,6 @@
 #include <QPainter>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-
-#include "dthememanager.h"
-#include "../utils.h"
-#include "../../3rdparty/math/quantity.h"
 
 const int EXPRESSIONBAR_HEIGHT = 100;
 
@@ -79,13 +63,9 @@ scientificModule::scientificModule(QWidget *parent)
     connect(this, &scientificModule::changedeg, m_scikeypadwidget, &ScientificKeyPad::getdeg); //切换deg切图
     connect(m_scikeypadwidget, &ScientificKeyPad::buttonPressed, this,
             &scientificModule::handleKeypadButtonPress);
-    connect(m_scikeypadwidget, &ScientificKeyPad::moveLeft, [ = ] { m_sciexpressionBar->moveLeft(); });
-    connect(m_scikeypadwidget, &ScientificKeyPad::moveRight, [ = ] { m_sciexpressionBar->moveRight(); });
     connect(m_scikeypadwidget, &ScientificKeyPad::buttonPressedbySpace, this, &scientificModule::handleKeypadButtonPressByspace);
     connect(m_memhiskeypad, &MemHisKeypad::buttonPressed, this,
             &scientificModule::handleKeypadButtonPress);
-    connect(m_memhiskeypad, &MemHisKeypad::moveLeft, [ = ] { m_sciexpressionBar->moveLeft(); });
-    connect(m_memhiskeypad, &MemHisKeypad::moveRight, [ = ] { m_sciexpressionBar->moveRight(); });
     connect(m_memhiskeypad, &MemHisKeypad::buttonPressedbySpace, this, &scientificModule::handleKeypadButtonPressByspace);
     connect(m_memhiswidget, &MemHisWidget::hisIsFilled, [ = ](bool hisisfilled) {
         if (hisisfilled) {
@@ -154,7 +134,7 @@ scientificModule::scientificModule(QWidget *parent)
             MemoryButton *btn4 = static_cast<MemoryButton *>(m_memhiskeypad->button(MemHisKeypad::Key_MS));
             btn4->setEnabled(true);
             m_memCalbtn = true;
-            m_memhiswidget->findChild<MemoryWidget *>()->expressionempty(b);
+            m_memhiswidget->getMemoryWiget()->expressionempty(b);
         } else {
             MemoryButton *btn2 = static_cast<MemoryButton *>(m_memhiskeypad->button(MemHisKeypad::Key_Mplus));
             btn2->setEnabled(false);
@@ -163,7 +143,7 @@ scientificModule::scientificModule(QWidget *parent)
             MemoryButton *btn4 = static_cast<MemoryButton *>(m_memhiskeypad->button(MemHisKeypad::Key_MS));
             btn4->setEnabled(false);
             m_memCalbtn = false;
-            m_memhiswidget->findChild<MemoryWidget *>()->expressionempty(b);
+            m_memhiswidget->getMemoryWiget()->expressionempty(b);
         }
     });
 
@@ -298,7 +278,7 @@ void scientificModule::handleEditKeyPress(QKeyEvent *e)
             m_sciexpressionBar->copyClipboard2Result();
         } else {
             m_sciexpressionBar->enterFEEvent(m_FEisdown);
-            m_memhiskeypad->animate(MemHisKeypad::Key_FE);
+//            m_memhiskeypad->animate(MemHisKeypad::Key_FE);
         }
         break;
     case Qt::Key_A:
@@ -733,7 +713,7 @@ void scientificModule::handleKeypadButtonPressByspace(int key)
 {
     m_scikeypadwidget->update();
     m_memhiskeypad->update();
-    if (key > 51 && key < 58)
+    if (key > 52 && key < 58)
         m_memhiskeypad->animate(MemHisKeypad::Buttons(key), true);
     else if (key < 52)
         m_scikeypadwidget->animate(ScientificKeyPad::Buttons(key), true);
@@ -1017,6 +997,8 @@ void scientificModule::handlePageStateChanged()
 void scientificModule::showMemHisWidget()
 {
     m_stackWidget->setCurrentWidget(m_memhiswidget);
+    m_memhiswidget->getSimpleListModel()->updataOfSeparate();
+    m_memhiswidget->getMemoryWiget()->resetLabelBySeparator();
     if (static_cast<MemoryButton *>(m_memhiskeypad->button(MemHisKeypad::Key_MHlist))->hasFocus()) {
         //当前界面无历史focus到membuttonboxbutton
         if (!m_memhiswidget->findChild<IconButton *>()->isHidden())
